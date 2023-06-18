@@ -1,1 +1,26 @@
-<div>{{ columnCount | async }}</div>
+<div class="grid-column-counter">Column Count: {{ columnCount | async }}</div>
+<button (click)="generateLayout()">Generate Layout</button>
+
+<div #scrollContainer class="scroll-container">
+    <ktd-grid
+        [gap]="5"
+        compactType="vertical"
+        [layout]="layout"
+        [rowHeight]="50"
+        [cols]="columnCount | async"
+        [scrollableParent]="scrollContainer"
+        (layoutUpdated)="onLayoutChanges($event)"
+    >
+        <ktd-grid-item
+            *ngFor="let item of layout; trackBy: trackById"
+            [id]="item.id"
+        >
+            <div class="grid-item-container grid-variables">
+                <div class="grid-item">{{ item.id }}</div>
+            </div>
+            <ng-template ktdGridItemPlaceholder>
+                <div class="grid-item-placeholder grid-variables"></div>
+            </ng-template>
+        </ktd-grid-item>
+    </ktd-grid>
+</div>

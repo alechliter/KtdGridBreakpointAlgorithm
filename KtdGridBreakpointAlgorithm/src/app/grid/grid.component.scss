@@ -1,0 +1,43 @@
+
+.grid-variables {
+    --border-radius: 5px;
+    --default-font: font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.grid-column-counter {
+    font-family: var(--default-font);
+}
+
+.scroll-container {
+    height: 100%;
+}
+
+.grid-item-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #67e13a;
+    border-radius: var(--border-radius);
+    user-select: noneS;
+
+    .grid-item {
+        font-family: var(--default-font);
+        user-select: none;
+    }
+}
+
+.grid-item-placeholder {
+    background-color: #45e10d4f;
+    border-radius: var(--border-radius);
+    height: 100%;
+    width: 100%;
+    display: flex;
+}
+
+button {
+    background: none;
+    border-radius: 5px;
+    padding: 0.5em;
+    margin: 0.5em;
+}
