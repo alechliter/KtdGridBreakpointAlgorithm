@@ -6,10 +6,13 @@ import {
 
 export function wrapLayout(layout: Layout, bounds: { cols: number }): Layout {
     const sortedLayout = sortLayout(layout);
+    const maintainedLayout: Array<string> = [];
     let wrappedLayout: Layout = [];
 
     sortedLayout.forEach((item) => {
+        let manipulated = false;
         if (item.x + item.w > bounds.cols) {
+            manipulated = true;
             if (bounds.cols - item.w < (item.minW ?? 0)) {
                 item.w = bounds.cols;
             }
@@ -22,6 +25,7 @@ export function wrapLayout(layout: Layout, bounds: { cols: number }): Layout {
         let iteration = 0;
         const maxIterations = layout.length * bounds.cols;
         while (collidingItems.length > 0 && iteration < maxIterations) {
+            manipulated = true;
             let rightMostCollision = getRightMostItem(collidingItems);
 
             item.x = rightMostCollision.x + rightMostCollision.w;
@@ -40,13 +44,17 @@ export function wrapLayout(layout: Layout, bounds: { cols: number }): Layout {
         } else {
             wrappedLayout.push(item);
         }
+
+        if (!manipulated) {
+            maintainedLayout.push(item.id);
+        }
     });
 
     wrappedLayout = ktdGridCompact(wrappedLayout, 'vertical', bounds.cols);
 
     for (let index = 0; index < wrappedLayout.length; index++) {
         const item = wrappedLayout[index];
-        if (item.y > 0) {
+        if (item.y > 0 && !maintainedLayout.includes(item.id)) {
             const tempItem = structuredClone(item);
             tempItem.y -= 1;
             const itemAbove = getShortestItem(

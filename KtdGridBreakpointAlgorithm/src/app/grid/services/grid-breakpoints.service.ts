@@ -12,6 +12,11 @@ export class GridBreakpointsService implements OnDestroy {
     set baseLayout(baseLayout: KtdGridLayout) {
         this._baseLayout = structuredClone(baseLayout);
         this.breakpointLayouts.clear();
+        const columnCount =
+            GridBreakpointsService.breakpoints.get(
+                this.getCurrentBreakpoint()
+            ) ?? 0;
+        this.breakpointLayouts.set(columnCount, this._baseLayout);
     }
 
     private breakpointLayouts: Map<number, KtdGridLayout> = new Map();
@@ -53,6 +58,26 @@ export class GridBreakpointsService implements OnDestroy {
             this.breakpointLayouts.set(columnCount, wrappedLayout);
             return wrappedLayout;
         }
+    }
+
+    getCurrentBreakpoint(): GridScreenBreakpoints {
+        let currentBreakpoint = GridScreenBreakpoints.Large;
+        if (this.breakpointObserver.isMatched(GridScreenBreakpoints.XSmall)) {
+            currentBreakpoint = GridScreenBreakpoints.XSmall;
+        } else if (
+            this.breakpointObserver.isMatched(GridScreenBreakpoints.Small)
+        ) {
+            currentBreakpoint = GridScreenBreakpoints.Small;
+        } else if (
+            this.breakpointObserver.isMatched(GridScreenBreakpoints.Medium)
+        ) {
+            currentBreakpoint = GridScreenBreakpoints.Medium;
+        } else if (
+            this.breakpointObserver.isMatched(GridScreenBreakpoints.Large)
+        ) {
+            currentBreakpoint = GridScreenBreakpoints.Large;
+        }
+        return currentBreakpoint;
     }
 
     private setupBreakpointListeners(): void {
