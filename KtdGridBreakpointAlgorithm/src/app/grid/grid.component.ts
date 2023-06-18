@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { GridBreakpointsService } from './services/grid-breakpoints.service';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, debounceTime, fromEvent, takeUntil } from 'rxjs';
 import { Layout } from '@katoid/angular-grid-layout/lib/utils/react-grid-layout.utils';
 import {
+    KtdGridComponent,
     KtdGridLayout,
     ktdGridCompact,
     ktdTrackById,
@@ -16,6 +17,8 @@ import { wrapLayout } from './utils/layout-manipulation.utils';
     styleUrls: ['grid.component.scss'],
 })
 export class GridComponent implements OnInit, OnDestroy {
+    @ViewChild(KtdGridComponent) gridComponent: KtdGridComponent | undefined;
+
     columnCount: Observable<number>;
 
     layout: KtdGridLayout = [];
@@ -30,6 +33,7 @@ export class GridComponent implements OnInit, OnDestroy {
         this.columnCount = this.gridBreakpointsService.columnCount;
 
         this.setupBreakpointListener();
+        this.setupWindowResizeListener();
     }
 
     ngOnDestroy(): void {
@@ -107,5 +111,13 @@ export class GridComponent implements OnInit, OnDestroy {
         }
 
         this.gridBreakpointsService.baseLayout = this.layout;
+    }
+
+    private setupWindowResizeListener(): void {
+        fromEvent(window, 'resize')
+            .pipe(debounceTime(100), takeUntil(this.unsubscribe))
+            .subscribe((e) => {
+                this.gridComponent?.resize();
+            });
     }
 }

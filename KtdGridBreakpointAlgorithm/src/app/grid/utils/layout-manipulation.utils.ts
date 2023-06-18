@@ -1,3 +1,4 @@
+import { ktdGridCompact } from '@katoid/angular-grid-layout';
 import {
     Layout,
     LayoutItem,
@@ -5,7 +6,7 @@ import {
 
 export function wrapLayout(layout: Layout, bounds: { cols: number }): Layout {
     const sortedLayout = sortLayout(layout);
-    const wrappedLayout: Layout = [];
+    let wrappedLayout: Layout = [];
 
     sortedLayout.forEach((item) => {
         if (item.x + item.w > bounds.cols) {
@@ -40,6 +41,31 @@ export function wrapLayout(layout: Layout, bounds: { cols: number }): Layout {
             wrappedLayout.push(item);
         }
     });
+
+    wrappedLayout = ktdGridCompact(wrappedLayout, 'vertical', bounds.cols);
+
+    for (let index = 0; index < wrappedLayout.length; index++) {
+        const item = wrappedLayout[index];
+        if (item.y > 0) {
+            const tempItem = structuredClone(item);
+            tempItem.y -= 1;
+            const itemAbove = getShortestItem(
+                getAllCollisions(wrappedLayout, tempItem)
+            );
+
+            tempItem.x = itemAbove.x + itemAbove.w;
+            if (tempItem.x + tempItem.w <= bounds.cols) {
+                if (getAllCollisions(wrappedLayout, tempItem).length === 0) {
+                    Object.assign(item, tempItem);
+                    wrappedLayout = ktdGridCompact(
+                        wrappedLayout,
+                        'vertical',
+                        bounds.cols
+                    );
+                }
+            }
+        }
+    }
 
     return wrappedLayout;
 }
