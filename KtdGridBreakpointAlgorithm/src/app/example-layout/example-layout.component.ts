@@ -3,10 +3,13 @@ import { KtdGridLayout, ktdGridCompact } from '@katoid/angular-grid-layout';
 import { AppComponent } from '../app.component';
 import { FooterComponent } from '../footer/containers/footer.component';
 import { FooterButtonModel } from '../footer/models/footer-button.model';
-import {
-    FooterManagerService,
-    FooterButtonManager,
-} from '../footer/services/footer-manager.service';
+import { FooterManagerService } from '../footer/services/footer-manager.service';
+import { FooterButtonManagerModel } from '../footer/models/footer-button-manager.model';
+
+export type ExampleLayoutFooterButtons = {
+    generate: FooterButtonModel;
+    toggleGenerate: FooterButtonModel;
+};
 
 @Component({
     selector: 'example-layout',
@@ -21,13 +24,13 @@ export class ExampleLayoutComponent implements OnInit {
         }
     }
 
-    title = 'KtdGridBreakpointAlgorithm';
-
     layout: KtdGridLayout = [];
 
     static readonly DefaultColumnCount = 12;
 
-    constructor(private footerManagerService: FooterManagerService) {
+    constructor(
+        private footerManagerService: FooterManagerService<ExampleLayoutFooterButtons>
+    ) {
         this.setupFooter();
         this.setupLayout();
     }
@@ -39,14 +42,30 @@ export class ExampleLayoutComponent implements OnInit {
     }
 
     private setupFooter(): void {
-        const footerButtons: FooterButtonManager = {
+        const buttonManager = new FooterButtonManagerModel({
             generate: new FooterButtonModel(
                 'Generate Layout',
                 this.generateLayout.bind(this)
             ),
-        } as const;
+            toggleGenerate: new FooterButtonModel(
+                'Toggle Generate Layout',
+                this.toggleGenerateButton.bind(this)
+            ),
+        });
 
-        this.footerManagerService.setFooterButtons(footerButtons);
+        this.footerManagerService.setFooterButtons(buttonManager);
+    }
+
+    private toggleGenerateButton(): void {
+        if (!this.footerManagerService.buttonManager) {
+            return;
+        }
+
+        if (this.footerManagerService.buttonManager.buttons.generate.disabled) {
+            this.footerManagerService.buttonManager.enableButton('generate');
+        } else {
+            this.footerManagerService.buttonManager.disableButton('generate');
+        }
     }
 
     private setupLayout(): void {

@@ -3,20 +3,23 @@ import { FooterModule } from '../footer.module';
 import { FooterComponent } from '../containers/footer.component';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { FooterButtonModel } from '../models/footer-button.model';
+import {
+    FooterButtonManager,
+    FooterButtonManagerModel,
+} from '../models/footer-button-manager.model';
 
-export type FooterButtonManager = { [key: string]: FooterButtonModel };
-
-@Injectable({
-    providedIn: FooterModule,
-})
-export class FooterManagerService implements OnDestroy {
-    get currentFooterButtons() {
-        return this.footerButtonsHash;
+@Injectable()
+export class FooterManagerService<
+    TFooterButtonManager extends FooterButtonManager = FooterButtonManager
+> implements OnDestroy
+{
+    get buttonManager() {
+        return this.footerButtonManager;
     }
 
     footerButtons: Observable<Array<FooterButtonModel>>;
 
-    private footerButtonsHash?: FooterButtonManager;
+    private footerButtonManager?: FooterButtonManagerModel<TFooterButtonManager>;
 
     private footerComponent?: FooterComponent;
 
@@ -47,26 +50,16 @@ export class FooterManagerService implements OnDestroy {
     }
 
     setFooterButtons(
-        footerButtons: FooterButtonManager | Array<FooterButtonModel>
+        footerButtons: FooterButtonManagerModel<TFooterButtonManager>
     ): void {
-        let footerButtonsHash: FooterButtonManager;
         let footerButtonsCollection: Array<FooterButtonModel>;
 
-        if (this.isFooterButtonManager(footerButtons)) {
-            footerButtonsHash = footerButtons;
-            footerButtonsCollection = [];
-            Object.keys(footerButtons).forEach((key) => {
-                footerButtonsCollection.push(footerButtons[key]);
-            });
-        } else {
-            footerButtonsCollection = footerButtons;
-            footerButtonsHash = {};
-            footerButtons.forEach((footerButton, index) => {
-                footerButtonsHash[`FooterButton-${index}`] = footerButton;
-            });
-        }
+        footerButtonsCollection = [];
+        Object.keys(footerButtons.buttons).forEach((key) => {
+            footerButtonsCollection.push(footerButtons.buttons[key]);
+        });
 
-        this.footerButtonsHash = footerButtonsHash;
+        this.footerButtonManager = footerButtons;
         this._footerButtons.next(footerButtonsCollection);
     }
 
@@ -74,27 +67,5 @@ export class FooterManagerService implements OnDestroy {
         if (this.footerComponent) {
             this.footerComponent.footerButtons = footerButtons;
         }
-    }
-
-    private isFooterButtonManager(
-        footerButtons: unknown
-    ): footerButtons is FooterButtonManager {
-        if (footerButtons == null || !(footerButtons instanceof Object)) {
-            return false;
-        }
-
-        if (Object.keys(footerButtons).some((key) => typeof key !== 'string')) {
-            return false;
-        }
-
-        if (
-            Object.values(footerButtons).some(
-                (value) => !(value instanceof FooterButtonModel)
-            )
-        ) {
-            return false;
-        }
-
-        return true;
     }
 }
