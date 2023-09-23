@@ -1,15 +1,34 @@
+@use "../../themes/themes";
 
-.grid-variables {
-    --border-radius: 5px;
-    --default-font: font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    row-gap: 0.5em;
+    padding-top: 0.5em;
+
+    .scroll-container {
+        flex-grow: 1;
+        flex-shrink: 1;
+        padding: 0.5em 0;
+    }
+
+    .grid-column-counter,
+    button {
+        flex-shrink: 0;
+        flex-grow: 0;
+    }
 }
 
 .grid-column-counter {
-    font-family: var(--default-font);
+    font-family: var(--font);
+    padding: 0 0.5em;
 }
 
 .scroll-container {
     height: 100%;
+    overflow-y: auto;
+    padding: 0 0.5em;
 }
 
 .grid-item-container {
@@ -17,18 +36,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #67e13a;
+    background-color: var(--grid-item-color);
     border-radius: var(--border-radius);
     user-select: none;
 
     .grid-item {
-        font-family: var(--default-font);
+        font-family: var(--font);
         user-select: none;
     }
 }
 
 .grid-item-placeholder {
-    background-color: #45e10d4f;
+    background-color: var(--grid-item-placeholder-color);
     border-radius: var(--border-radius);
     height: 100%;
     width: 100%;
@@ -40,4 +59,9 @@ button {
     border-radius: 5px;
     padding: 0.5em;
     margin: 0.5em;
+    font-family: var(--font);
+
+    &:hover {
+        cursor: pointer;
+    }
 }

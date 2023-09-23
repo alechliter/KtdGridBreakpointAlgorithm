@@ -1,0 +1,10 @@
+<div *ngIf="!hidden" class="footer">
+    <button
+        *ngFor="let button of footerButtons"
+        class="footer-button"
+        [disabled]="button.disabled"
+        (click)="button.onClick($event)"
+    >
+        {{ button.label }}
+    </button>
+</div>

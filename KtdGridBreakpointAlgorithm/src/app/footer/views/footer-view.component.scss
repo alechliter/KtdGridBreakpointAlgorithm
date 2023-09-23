@@ -1,0 +1,22 @@
+@use "../../../themes/themes.scss";
+
+.footer {
+    background-color: var(--footer-color);
+    display: flex;
+    column-gap: 0.5em;
+    justify-content: flex-end;
+    height: 3em;
+
+    .footer-button {
+        flex-grow: 0;
+
+        background: none;
+        border-radius: 5px;
+        padding: 0.5em;
+        margin: 0.5em;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

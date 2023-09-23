@@ -1,0 +1,17 @@
+@use "../themes/themes";
+
+.app-container {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        flex-grow: 1;
+        flex-shrink: 1;
+        height: 0;
+    }
+
+    .footer {
+        flex: 0 0 fit-content;
+    }
+}
