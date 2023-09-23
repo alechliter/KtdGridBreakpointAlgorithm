@@ -3,18 +3,18 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { GridModule } from './grid/grid.module';
+
 import { LayoutModule } from '@angular/cdk/layout';
-import { FooterModule } from './footer/footer.module';
+
+import { ExampleLayoutModule } from './example-layout/example-layout.module';
 
 @NgModule({
     declarations: [AppComponent],
     imports: [
         BrowserModule,
         AppRoutingModule,
-        GridModule,
         LayoutModule,
-        FooterModule,
+        ExampleLayoutModule,
     ],
     providers: [],
     bootstrap: [AppComponent],

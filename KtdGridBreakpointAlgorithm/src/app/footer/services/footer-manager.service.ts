@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Injectable, OnDestroy } from '@angular/core';
 import { FooterModule } from '../footer.module';
 import { FooterComponent } from '../containers/footer.component';
 import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
@@ -24,7 +24,7 @@ export class FooterManagerService implements OnDestroy {
 
     private unsubscribe = new Subject<void>();
 
-    constructor() {
+    constructor(private changeDetector: ChangeDetectorRef) {
         this.footerButtons = this._footerButtons.asObservable();
     }
 
@@ -35,6 +35,7 @@ export class FooterManagerService implements OnDestroy {
     connectTo(footerComponent: FooterComponent): void {
         this.footerComponent = footerComponent;
         this.startSubscriptions();
+        this.changeDetector.detectChanges();
     }
 
     startSubscriptions(): void {
