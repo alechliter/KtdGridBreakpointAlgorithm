@@ -41,26 +41,36 @@ export class FooterManagerService<
         this.changeDetector.detectChanges();
     }
 
-    startSubscriptions(): void {
-        this.unsubscribe.next();
-
-        this.footerButtons.pipe(takeUntil(this.unsubscribe)).subscribe({
-            next: this.onFooterButtonsChange.bind(this),
-        });
-    }
-
     setFooterButtons(
         footerButtons: FooterButtonManagerModel<TFooterButtonManager>
     ): void {
-        let footerButtonsCollection: Array<FooterButtonModel>;
+        const footerButtonsCollection: Array<FooterButtonModel> = [];
 
-        footerButtonsCollection = [];
         Object.keys(footerButtons.buttons).forEach((key) => {
             footerButtonsCollection.push(footerButtons.buttons[key]);
         });
 
         this.footerButtonManager = footerButtons;
         this._footerButtons.next(footerButtonsCollection);
+    }
+
+    disableButton(
+        button: keyof TFooterButtonManager,
+        isDisabled: boolean
+    ): void {
+        if (isDisabled) {
+            this.buttonManager?.disableButton(button);
+        } else {
+            this.buttonManager?.enableButton(button);
+        }
+    }
+
+    private startSubscriptions(): void {
+        this.unsubscribe.next();
+
+        this.footerButtons.pipe(takeUntil(this.unsubscribe)).subscribe({
+            next: this.onFooterButtonsChange.bind(this),
+        });
     }
 
     private onFooterButtonsChange(footerButtons: Array<FooterButtonModel>) {

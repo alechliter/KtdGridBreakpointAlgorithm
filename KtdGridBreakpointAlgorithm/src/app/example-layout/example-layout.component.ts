@@ -42,18 +42,18 @@ export class ExampleLayoutComponent implements OnInit {
     }
 
     private setupFooter(): void {
-        const buttonManager = new FooterButtonManagerModel({
-            generate: new FooterButtonModel(
-                'Generate Layout',
-                this.generateLayout.bind(this)
-            ),
-            toggleGenerate: new FooterButtonModel(
-                'Toggle Generate Layout',
-                this.toggleGenerateButton.bind(this)
-            ),
-        });
-
-        this.footerManagerService.setFooterButtons(buttonManager);
+        this.footerManagerService.setFooterButtons(
+            new FooterButtonManagerModel({
+                toggleGenerate: new FooterButtonModel(
+                    'Toggle Generate Layout',
+                    this.toggleGenerateButton.bind(this)
+                ),
+                generate: new FooterButtonModel(
+                    'Generate Layout',
+                    this.generateLayout.bind(this)
+                ),
+            })
+        );
     }
 
     private toggleGenerateButton(): void {
@@ -61,11 +61,9 @@ export class ExampleLayoutComponent implements OnInit {
             return;
         }
 
-        if (this.footerManagerService.buttonManager.buttons.generate.disabled) {
-            this.footerManagerService.buttonManager.enableButton('generate');
-        } else {
-            this.footerManagerService.buttonManager.disableButton('generate');
-        }
+        const isDisabled =
+            this.footerManagerService.buttonManager.buttons.generate.disabled;
+        this.footerManagerService.disableButton('generate', !isDisabled);
     }
 
     private setupLayout(): void {
