@@ -9,6 +9,7 @@ import { FooterButtonManagerModel } from '../footer/models/footer-button-manager
 export type ExampleLayoutFooterButtons = {
     generate: FooterButtonModel;
     toggleGenerate: FooterButtonModel;
+    hideToggleButton: FooterButtonModel;
 };
 
 @Component({
@@ -44,6 +45,10 @@ export class ExampleLayoutComponent implements OnInit {
     private setupFooter(): void {
         this.footerManagerService.setFooterButtons(
             new FooterButtonManagerModel({
+                hideToggleButton: new FooterButtonModel(
+                    'Hide Toggle Button',
+                    this.hideToggleButton.bind(this)
+                ),
                 toggleGenerate: new FooterButtonModel(
                     'Toggle Generate Layout',
                     this.toggleGenerateButton.bind(this)
@@ -57,13 +62,31 @@ export class ExampleLayoutComponent implements OnInit {
     }
 
     private toggleGenerateButton(): void {
-        if (!this.footerManagerService.buttonManager) {
+        if (!this.footerManagerService.buttons) {
             return;
         }
 
-        const isDisabled =
-            this.footerManagerService.buttonManager.buttons.generate.disabled;
-        this.footerManagerService.disableButton('generate', !isDisabled);
+        if (this.footerManagerService.buttons.generate.disabled) {
+            this.footerManagerService.enableButton('generate');
+        } else {
+            this.footerManagerService.disableButton('generate');
+        }
+    }
+
+    private hideToggleButton(): void {
+        if (!this.footerManagerService.buttons) {
+            return;
+        }
+
+        if (this.footerManagerService.isButtonHidden('toggleGenerate')) {
+            this.footerManagerService.buttons.hideToggleButton.label =
+                'Hide Toggle Button';
+            this.footerManagerService.showButton('toggleGenerate');
+        } else {
+            this.footerManagerService.buttons.hideToggleButton.label =
+                'Show Toggle Button';
+            this.footerManagerService.hideButton('toggleGenerate');
+        }
     }
 
     private setupLayout(): void {

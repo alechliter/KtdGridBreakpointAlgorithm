@@ -13,8 +13,14 @@ export class FooterManagerService<
     TFooterButtonManager extends FooterButtonManager = FooterButtonManager
 > implements OnDestroy
 {
-    get buttonManager() {
+    get buttonManager():
+        | FooterButtonManagerModel<TFooterButtonManager>
+        | undefined {
         return this.footerButtonManager;
+    }
+
+    get buttons(): TFooterButtonManager | undefined {
+        return this.footerButtonManager?.buttons;
     }
 
     footerButtons: Observable<Array<FooterButtonModel>>;
@@ -44,25 +50,44 @@ export class FooterManagerService<
     setFooterButtons(
         footerButtons: FooterButtonManagerModel<TFooterButtonManager>
     ): void {
-        const footerButtonsCollection: Array<FooterButtonModel> = [];
-
-        Object.keys(footerButtons.buttons).forEach((key) => {
-            footerButtonsCollection.push(footerButtons.buttons[key]);
-        });
-
         this.footerButtonManager = footerButtons;
-        this._footerButtons.next(footerButtonsCollection);
+        this._footerButtons.next(footerButtons.toArray());
     }
 
-    disableButton(
-        button: keyof TFooterButtonManager,
-        isDisabled: boolean
-    ): void {
-        if (isDisabled) {
-            this.buttonManager?.disableButton(button);
-        } else {
-            this.buttonManager?.enableButton(button);
+    disableButton(button: keyof TFooterButtonManager): void {
+        this.buttonManager?.disableButton(button);
+    }
+
+    enableButton(button: keyof TFooterButtonManager): void {
+        this.buttonManager?.enableButton(button);
+    }
+
+    hideButton(button: keyof TFooterButtonManager): void {
+        if (
+            this.footerButtonManager &&
+            !this.footerButtonManager.isButtonHidden(button)
+        ) {
+            this.footerButtonManager.hideButton(button);
+            this._footerButtons.next(this.footerButtonManager.toArray());
         }
+    }
+
+    showButton(button: keyof TFooterButtonManager): void {
+        if (
+            this.footerButtonManager &&
+            this.footerButtonManager.isButtonHidden(button)
+        ) {
+            this.footerButtonManager.showButton(button);
+            this._footerButtons.next(this.footerButtonManager.toArray());
+        }
+    }
+
+    isButtonHidden(button: keyof TFooterButtonManager): boolean {
+        if (!this.footerButtonManager) {
+            return true;
+        }
+
+        return this.footerButtonManager.isButtonHidden(button);
     }
 
     private startSubscriptions(): void {
